@@ -8,6 +8,7 @@ from ultralytics import YOLO
 from PIL import Image
 import argparse
 
+from log import logger
 
 # define the function that handles our processing thread
 def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable_motor:bool=False):
@@ -23,14 +24,12 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
     qfps = 0.0
     # init video
     cap = cv2.VideoCapture(video_source)
-    print("[info] W, H, FPS")
-    frame_w = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    print(frame_w)
-    print(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    print(cap.get(cv2.CAP_PROP_FPS))
+    
 
     frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    logger.info(f"[info] W, H, FPS\n{frameWidth}, {frameHeight}, {cap.get(cv2.CAP_PROP_FPS)}")
+
     if enable_motor:
         motor = MotorInterface(pwm_gpio)
     # initialize the input queue (frames), output queue (out),
@@ -43,12 +42,12 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
 
     # construct a child process *indepedent* from our main process of
     # execution
-    print("[INFO] starting process...")
+    logger.info("Starting process...")
     p = Process(target=classify_frame, args=(img, inputQueue, outputQueue,))
     p.daemon = True
     p.start()
     time.sleep(10)
-    print("[INFO] starting capture...")
+    logger.info("Starting capture...")
 
     # time the frame rate....
     timer1 = time.time()
@@ -103,14 +102,14 @@ def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable
                 queuepulls += 1
 
                 if enable_motor:
-                    if ball_xC<frame_w / 3:
-                        print("Ball in left side")
+                    if ball_xC<frameWidth / 3:
+                        logger.debug("Ball in left side")
                         if motor_index >0:
                             motor_index -=1
                         motor.goTo(motor_pos[motor_index])
                         
-                    elif ball_xC > frame_w * (2/3):
-                        print("ball in right side")
+                    elif ball_xC > frameWidth * (2/3):
+                        logger.debug("ball in right side")
                         if motor_index <len(motor_pos)-1:
                             motor_index +=1
                         motor.goTo(motor.goTo(motor_pos[motor_index]))

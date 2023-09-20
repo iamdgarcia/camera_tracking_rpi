@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-
+from log import logger
 class MotorInterface:
     """
     A class for controlling a servo motor using the Raspberry Pi GPIO library.
@@ -38,6 +38,7 @@ class MotorInterface:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.servo_pin, GPIO.OUT)
         self.pwm = GPIO.PWM(self.servo_pin, self.frequency)
+        logger.info(f"Initializing motor on pin {servo_pin}")
 
     def angle_to_duty(self, ang: float) -> float:
         """
@@ -64,6 +65,7 @@ class MotorInterface:
 
     def cleanup(self):
         """Cleans up the GPIO resources when done using the motor."""
+        logger.info("Cleaning PWM pins")
         GPIO.cleanup()
 
 if __name__ == '__main__':
