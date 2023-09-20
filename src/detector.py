@@ -7,14 +7,10 @@ from ultralytics import YOLO
 
 from PIL import Image
 import argparse
-# Misc vars
-
-confThreshold = 0.6
-model = None
 
 
 # define the function that handles our processing thread
-def process_video(model_path,video_source,pwm_gpio,show,enable_motor):
+def process_video(model_path:str,video_source,pwm_gpio:int,show:bool=True,enable_motor:bool=False):
     if enable_motor:
         from motor import MotorInterface
     global model
@@ -182,7 +178,7 @@ import configparser
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', help='path to cfg file' default="config.cfg")
+    parser.add_argument('--cfg', help='path to cfg file', default="config.cfg")
     config = configparser.ConfigParser()
 
     # Load the configuration file

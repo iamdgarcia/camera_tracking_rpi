@@ -5,7 +5,34 @@ from PyQt5.QtCore import Qt
 from motor import MotorInterface
 
 class MotorControlApp(QWidget):
-    def __init__(self,gpio_pin):
+    """
+    PyQt5 application for controlling a servo motor using a GUI.
+
+    Attributes:
+        servo_pin (int): The GPIO pin number connected to the servo motor.
+        motor_interface (MotorInterface): An instance of the MotorInterface class for motor control.
+
+    Methods:
+        __init__(self, gpio_pin: int)
+            Initializes the MotorControlApp with the specified GPIO pin for motor control.
+
+        init_ui(self)
+            Initializes the GUI components and layout.
+
+        update_motor_angle(self)
+            Updates the motor's angle based on the slider value.
+
+        closeEvent(self, event)
+            Handles the application close event and cleans up GPIO resources.
+    """
+
+    def __init__(self, gpio_pin: int):
+        """
+        Initializes the MotorControlApp with the specified GPIO pin for motor control.
+
+        Args:
+            gpio_pin (int): The GPIO pin number connected to the servo motor.
+        """
         super().__init__()
 
         self.setWindowTitle("Motor Control")
@@ -17,6 +44,9 @@ class MotorControlApp(QWidget):
         self.init_ui()
 
     def init_ui(self):
+        """
+        Initializes the GUI components and layout.
+        """
         layout = QVBoxLayout()
 
         self.angle_label = QLabel("Angle: 0")
@@ -32,19 +62,30 @@ class MotorControlApp(QWidget):
         self.setLayout(layout)
 
     def update_motor_angle(self):
+        """
+        Updates the motor's angle based on the slider value.
+        """
         angle = self.angle_slider.value()
         self.angle_label.setText(f"Angle: {angle}")
         self.motor_interface.goTo(angle)
 
     def closeEvent(self, event):
+        """
+        Handles the application close event and cleans up GPIO resources.
+
+        Args:
+            event (QCloseEvent): The close event.
+        """
         self.motor_interface.cleanup()
         GPIO.cleanup()
         event.accept()
+
+
 import argparse
 import configparser
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', help='path to cfg file' default="config.cfg")
+    parser.add_argument('--cfg', help='path to cfg file', default="config.cfg")
     config = configparser.ConfigParser()
     pwm_gpio = config["motor"].getint("gpio_pin")    # Load the configuration file
     args = parser.parse_args()
