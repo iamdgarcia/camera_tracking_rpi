@@ -1,0 +1,3 @@
+ultralytics
+PyQt5
+RPi.GPIO
