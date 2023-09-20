@@ -182,7 +182,7 @@ import configparser
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', help='.tflite model path')
+    parser.add_argument('--cfg', help='path to cfg file' default="config.cfg")
     config = configparser.ConfigParser()
 
     # Load the configuration file
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     modelPath = config["detector"]["model_path"]
     camera_idx = config["detector"]["camera_idx"]
     confThreshold = config["detector"].getfloat("conf_threshold")
-    pwm_gpio = config["motor"]["gpio_pin"]
-    show = config["general"]["show"]
+    pwm_gpio = config["motor"].getint("gpio_pin")
+    show = config["general"].getboolean("show")
     enable_motor = config["motor"].getboolean('enable')
     process_video(model_path=modelPath,video_source=camera_idx,pwm_gpio=pwm_gpio,show=show,enable_motor=enable_motor)

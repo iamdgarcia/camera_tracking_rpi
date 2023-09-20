@@ -5,13 +5,13 @@ from PyQt5.QtCore import Qt
 from motor import MotorInterface
 
 class MotorControlApp(QWidget):
-    def __init__(self):
+    def __init__(self,gpio_pin):
         super().__init__()
 
         self.setWindowTitle("Motor Control")
         self.setGeometry(100, 100, 400, 200)
 
-        self.servo_pin = 18  # Change this to your GPIO pin number
+        self.servo_pin = gpio_pin  # Change this to your GPIO pin number
         self.motor_interface = MotorInterface(self.servo_pin)
 
         self.init_ui()
@@ -40,9 +40,16 @@ class MotorControlApp(QWidget):
         self.motor_interface.cleanup()
         GPIO.cleanup()
         event.accept()
-
+import argparse
+import configparser
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--cfg', help='path to cfg file' default="config.cfg")
+    config = configparser.ConfigParser()
+    pwm_gpio = config["motor"].getint("gpio_pin")    # Load the configuration file
+    args = parser.parse_args()
+    config.read(args.cfg)
     app = QApplication(sys.argv)
-    window = MotorControlApp()
+    window = MotorControlApp(pwm_gpio)
     window.show()
     sys.exit(app.exec_())
