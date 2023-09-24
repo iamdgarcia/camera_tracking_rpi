@@ -43,7 +43,7 @@ Before you begin, make sure you have the following components and software ready
 4.3. Execute the "run_detector" script or command to start the ball tracking system. This script will utilize the configured settings from the cfg file.
 
 ```bash
-python run_detector.py
+ ./run_detector.sh
 ```
 
 4.4. Observe the system's behavior. It should start tracking the ball using the external camera and controlling the PWM motor based on the detected ball's position.
